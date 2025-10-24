@@ -21,6 +21,6 @@ test('throws error when dividing by zero', () => {
 });
 
 test('modulus 10 % 3 = 1', () => {
-  expect(modulud(10, 3)).toBe(1);
+  expect(modulus(10, 3)).toBe(1);
 });
 
