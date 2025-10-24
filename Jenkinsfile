@@ -1,40 +1,62 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS'
+    }
+
+    parameters {
+        string(name: 'BRANCH_NAME', defaultValue: 'main')
+        string(name: 'BUILD_ENV', defaultValue: 'dev')
+        string(name: 'STUDENT_NAME', defaultValue: 'your name') // provide your name here, no name = no marks
+    }
+
     environment {
-        NODEJS_HOME = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-        PATH = "${NODEJS_HOME}\\bin;${env.PATH}"
+        APP_VERSION = "1.0.0"
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Cloning repository...'
-                checkout scm
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
-                bat 'npm install'
+                echo "Installing Node.js dependencies..."
+                bat "npm install"
             }
         }
 
-        stage('Run Tests') {
+        stage('Build') {
             steps {
-                echo 'Running Jest tests...'
-                bat 'npm test'
+                echo "Building Calculator App v${APP_VERSION} on branch ${params.BRANCH_NAME}"
+            }
+        }
+
+        stage('Unit Test') {
+            when {
+                expression { return params.BUILD_ENV == 'dev' }
+            }
+            steps {
+                echo "Running unit tests with Jest..."
+                bat "npm test"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Simulating deployment of Node.js Calculator App..."
             }
         }
     }
 
     post {
+        always {
+            echo "Cleaning up workspace..."
+            // deleteDir() // uncomment if you want to clear workspace after build
+        }
         success {
-            echo 'Build and tests succeeded!'
+            echo "Pipeline executed successfully."
         }
         failure {
-            echo 'Build or tests failed!'
+            echo "Pipeline failed."
         }
     }
 }
+
