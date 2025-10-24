@@ -1,8 +1,9 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS'  // Make sure Jenkins has NodeJS configured with this name
+    environment {
+        NODEJS_HOME = tool name: 'NodeJS', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -15,14 +16,14 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
+                echo ' Installing dependencies...'
                 sh 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo 'Running Jest tests...'
+                echo ' Running Jest tests...'
                 sh 'npm test'
             }
         }
@@ -30,11 +31,12 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build and tests succeeded!'
+            echo ' Build and tests succeeded!'
         }
         failure {
-            echo '❌ Build or tests failed!'
+            echo ' Build or tests failed!'
         }
     }
 }
+
 
